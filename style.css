@@ -172,3 +172,7 @@ button:hover {
 .rep-max-item:last-child {
 	border-bottom: none;
 }
+
+.summary-container {
+	margin-bottom: 3rem;
+}
