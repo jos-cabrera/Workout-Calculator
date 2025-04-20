@@ -210,7 +210,7 @@ function createWorkoutSet(remainingSets) {
 					{ class: 'rep-max-item' },
 					`${rm.reps}RM: ${rm.weight.toFixed(
 						2
-					)} (${rm.totalVolume.toFixed(2)})${label}`
+					)}Kg (${rm.totalVolume.toFixed(2)})${label}`
 				)
 			);
 		});
