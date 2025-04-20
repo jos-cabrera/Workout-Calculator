@@ -41,6 +41,7 @@ button:hover {
 }
 
 .content {
+	position: relative;
 	background: white;
 	padding: 2rem;
 	border-radius: 8px;
@@ -101,6 +102,8 @@ button:hover {
 
 .restart-btn {
 	background-color: #2ecc71;
+	position: absolute;
+	right: 2rem;
 }
 
 .restart-btn:hover {

@@ -74,6 +74,20 @@ function calculateEstimatedVolumes(remainingSets, rir) {
 let allSets = [];
 let currentTotalVolume = 0;
 
+function displayCurrentVolume() {
+	let volumeDisplay = document.getElementById('volume-display');
+	if (!volumeDisplay) {
+		volumeDisplay = createElement('div', {
+			id: 'volume-display',
+			class: 'volume-display',
+		});
+		document.querySelector('.content').appendChild(volumeDisplay);
+	}
+	volumeDisplay.textContent = `Current Total Volume: ${currentTotalVolume.toFixed(
+		2
+	)}`;
+}
+
 function createWorkoutSet(remainingSets) {
 	const content = document.querySelector('.content');
 	const errorElement = document.getElementById('error');
@@ -165,6 +179,8 @@ function createWorkoutSet(remainingSets) {
 			0
 		);
 
+		displayCurrentVolume();
+
 		// Calculate estimations for remaining sets
 		const estimatedVolumes = calculateEstimatedVolumes(
 			remainingSets - 1,
@@ -177,14 +193,26 @@ function createWorkoutSet(remainingSets) {
 			createElement('h3', {}, 'Rep Max Estimates:')
 		);
 
+		// Find best 1RM by volume
+		const bestVolume = Math.max(
+			...estimatedVolumes.map((rm) => rm.totalVolume)
+		);
+		const bestRM = estimatedVolumes.find(
+			(rm) => rm.totalVolume === bestVolume
+		);
+
 		estimatedVolumes.forEach((rm) => {
+			const isBest = rm.reps === bestRM.reps;
+			const label = isBest ? ' (Recommended)' : '';
 			repMaxesContainer.appendChild(
 				createElement(
 					'div',
 					{ class: 'rep-max-item' },
 					`${rm.reps}RM: ${rm.weight.toFixed(
 						2
-					)} (Estimated Total Volume: ${rm.totalVolume.toFixed(2)})`
+					)} (Estimated Total Volume: ${rm.totalVolume.toFixed(
+						2
+					)})${label}`
 				)
 			);
 		});
@@ -204,6 +232,12 @@ function createWorkoutSet(remainingSets) {
 function finalizeWorkout() {
 	const content = document.querySelector('.content');
 
+	// Remove live volume display if present
+	const volumeDisplay = document.getElementById('volume-display');
+	if (volumeDisplay) volumeDisplay.remove();
+
+	const setsSummary = generateSetSummary(allSets);
+
 	content.append(
 		createElement(
 			'div',
@@ -213,14 +247,32 @@ function finalizeWorkout() {
 		createElement(
 			'div',
 			{ class: 'summary-container' },
-			`Sets: ${generateSetSummary(allSets)}`
+			`Sets: ${setsSummary}`
 		),
+		createCopyButton(setsSummary), // Add the copy button here
 		createRestartButton()
 	);
 
 	document
 		.querySelectorAll('.inputs-container, .rep-maxes')
 		.forEach((el) => el.remove());
+}
+
+function createCopyButton(textToCopy) {
+	const button = createElement(
+		'button',
+		{ class: 'copy-btn' },
+		'Copy Sets Summary'
+	);
+	button.addEventListener('click', () => {
+		navigator.clipboard.writeText(textToCopy).then(() => {
+			button.textContent = 'Copied!';
+			setTimeout(() => {
+				button.textContent = 'Copy Sets Summary';
+			}, 2000);
+		});
+	});
+	return button;
 }
 
 function generateSetSummary(sets) {
