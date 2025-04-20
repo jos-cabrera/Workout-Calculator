@@ -203,14 +203,18 @@ function createWorkoutSet(remainingSets) {
 
 		estimatedVolumes.forEach((rm) => {
 			const isBest = rm.reps === bestRM.reps;
-			const label = isBest ? ' (Recommended)' : '';
+			const bestStyle = isBest ? 'color:rgb(138, 123, 40);' : ''; // Highlight with a light background color
+
 			repMaxesContainer.appendChild(
 				createElement(
 					'div',
-					{ class: 'rep-max-item' },
+					{
+						class: 'rep-max-item',
+						style: bestStyle, // Apply the style if it's the best
+					},
 					`${rm.reps}RM: ${rm.weight.toFixed(
 						2
-					)}Kg (${rm.totalVolume.toFixed(2)})${label}`
+					)}Kg (${rm.totalVolume.toFixed(2)})`
 				)
 			);
 		});
