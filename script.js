@@ -240,6 +240,16 @@ function finalizeWorkout() {
 
 	const setsSummary = generateSetSummary(allSets);
 
+	// Create a div for buttons
+	const buttonContainer = createElement('div', { class: 'button-container' });
+
+	// Append the buttons to the button container
+	buttonContainer.append(
+		createCopyButton(setsSummary),
+		createRestartButton()
+	);
+
+	// Append the results and button container to content
 	content.append(
 		createElement(
 			'div',
@@ -251,10 +261,10 @@ function finalizeWorkout() {
 			{ class: 'summary-container' },
 			`Sets: ${setsSummary}`
 		),
-		createCopyButton(setsSummary), // Add the copy button here
-		createRestartButton()
+		buttonContainer // Add the button container
 	);
 
+	// Remove unnecessary elements
 	document
 		.querySelectorAll('.inputs-container, .rep-maxes')
 		.forEach((el) => el.remove());
