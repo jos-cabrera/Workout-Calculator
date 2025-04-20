@@ -190,7 +190,7 @@ function createWorkoutSet(remainingSets) {
 		document.querySelectorAll('.rep-maxes').forEach((el) => el.remove());
 		const repMaxesContainer = createElement('div', { class: 'rep-maxes' });
 		repMaxesContainer.appendChild(
-			createElement('h3', {}, 'Rep Max Estimates:')
+			createElement('h3', {}, 'Rep Max and Volume Estimates:')
 		);
 
 		// Find best 1RM by volume
@@ -210,9 +210,7 @@ function createWorkoutSet(remainingSets) {
 					{ class: 'rep-max-item' },
 					`${rm.reps}RM: ${rm.weight.toFixed(
 						2
-					)} (Estimated Total Volume: ${rm.totalVolume.toFixed(
-						2
-					)})${label}`
+					)} (${rm.totalVolume.toFixed(2)})${label}`
 				)
 			);
 		});
