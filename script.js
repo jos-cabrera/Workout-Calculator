@@ -32,7 +32,7 @@ function createElement(tag, attributes = {}, textContent = '') {
     return element;
 }
 
-// Exercise Science Calculations (excluding volume-related calculations)
+// Exercise Science Calculations
 function calculateOneRepMax(weight, reps) {
     return reps === 1 ? weight : weight / (1.0278 - 0.0278 * reps);
 }
@@ -49,7 +49,7 @@ function estimateRepMaxes(oneRepMax) {
     return repMaxes;
 }
 
-let allSets = []; // Initialize allSets here
+let allSets = [];
 
 function createWorkoutSet(remainingSets) {
     const content = document.querySelector('.content');
@@ -169,20 +169,18 @@ function createWorkoutSet(remainingSets) {
 
 function finalizeWorkout() {
     const content = document.querySelector('.content');
-
     document
         .querySelectorAll('.inputs-container, .rep-maxes')
         .forEach((el) => el.remove());
 
     const setsSummary = generateSetSummary(allSets);
-
     localStorage.setItem('lastSetSummary', setsSummary);
 
     const buttonContainer = createElement('div', { class: 'button-container' });
 
     buttonContainer.append(
         createCopyButton(setsSummary),
-        createRestartButton()
+        createRestartButton(setsSummary)
     );
 
     content.append(
@@ -213,6 +211,22 @@ function createCopyButton(textToCopy) {
     return button;
 }
 
+function createRestartButton(summaryToCopy) {
+    const button = createElement(
+        'button',
+        { class: 'restart-btn' },
+        'Start New Session'
+    );
+    button.addEventListener('click', () => {
+        navigator.clipboard.writeText(summaryToCopy).then(() => {
+            setTimeout(() => {
+                location.reload();
+            }, 200); // slight delay to allow clipboard to complete
+        });
+    });
+    return button;
+}
+
 function generateSetSummary(sets) {
     const weightRepsMap = {};
     sets.forEach(({ weight, reps }) => {
@@ -225,18 +239,6 @@ function generateSetSummary(sets) {
             return `${weight}${count > 1 ? ` ${count}x${reps}` : ` ${reps}`}`;
         })
         .join(', ');
-}
-
-function createRestartButton() {
-    const button = createElement(
-        'button',
-        { class: 'restart-btn' },
-        'Start New Session'
-    );
-    button.addEventListener('click', () => {
-        location.reload();
-    });
-    return button;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -255,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const buttonContainer = createElement('div', { class: 'button-container' });
         buttonContainer.append(
             createCopyButton(lastSummary),
-            createRestartButton()
+            createRestartButton(lastSummary)
         );
         content.append(summaryContainer, buttonContainer);
     }
