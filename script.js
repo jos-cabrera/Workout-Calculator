@@ -32,14 +32,14 @@ function createElement(tag, attributes = {}, textContent = '') {
 	return element;
 }
 
-// Exercise Science Calculations
+// Exercise Science Calculations (excluding volume-related calculations)
 function calculateOneRepMax(weight, reps) {
 	return reps === 1 ? weight : weight / (1.0278 - 0.0278 * reps);
 }
 
 function estimateRepMaxes(oneRepMax) {
 	const repMaxes = [];
-	for (let reps = 1; reps <= 30; reps++) {
+	for (let reps = 1; reps <= 12; reps++) {
 		const estimatedWeight = oneRepMax * (1.0278 - 0.0278 * reps);
 		repMaxes.push({
 			reps,
@@ -49,44 +49,7 @@ function estimateRepMaxes(oneRepMax) {
 	return repMaxes;
 }
 
-function calculateEffectiveReps(reps, rir) {
-	const repsInReserve = Math.max(0, rir);
-	const possibleEffectiveReps = Math.max(0, reps - repsInReserve);
-	return Math.min(possibleEffectiveReps, 5);
-}
-
-function calculateEstimatedVolumes(remainingSets, rir) {
-	const oneRepMax = calculateOneRepMax(allSets[0].weight, allSets[0].reps);
-	const estimatedRepMaxes = estimateRepMaxes(oneRepMax);
-
-	return estimatedRepMaxes.map((rm) => {
-		const rmEffectiveReps = calculateEffectiveReps(rm.reps, rir);
-		const addedVolume = remainingSets * rm.weight * rmEffectiveReps;
-		return {
-			...rm,
-			totalVolume: parseFloat(
-				(currentTotalVolume + addedVolume).toFixed(2)
-			),
-		};
-	});
-}
-
-let allSets = [];
-let currentTotalVolume = 0;
-
-function displayCurrentVolume() {
-	let volumeDisplay = document.getElementById('volume-display');
-	if (!volumeDisplay) {
-		volumeDisplay = createElement('div', {
-			id: 'volume-display',
-			class: 'volume-display',
-		});
-		document.querySelector('.content').appendChild(volumeDisplay);
-	}
-	volumeDisplay.textContent = `Current Total Volume: ${currentTotalVolume.toFixed(
-		2
-	)}`;
-}
+let allSets = []; // Initialize allSets here
 
 function createWorkoutSet(remainingSets) {
 	const content = document.querySelector('.content');
@@ -172,49 +135,23 @@ function createWorkoutSet(remainingSets) {
 		const currentSet = { weight, reps, rir };
 		allSets.push(currentSet);
 
-		// Update current total volume
-		currentTotalVolume = allSets.reduce(
-			(sum, { weight, reps, rir }) =>
-				sum + weight * calculateEffectiveReps(reps, rir),
-			0
-		);
-
-		displayCurrentVolume();
-
 		// Calculate estimations for remaining sets
-		const estimatedVolumes = calculateEstimatedVolumes(
-			remainingSets - 1,
-			rir
+		const estimatedRepMaxes = estimateRepMaxes(
+			calculateOneRepMax(weight, reps + rir)
 		);
 
 		document.querySelectorAll('.rep-maxes').forEach((el) => el.remove());
 		const repMaxesContainer = createElement('div', { class: 'rep-maxes' });
 		repMaxesContainer.appendChild(
-			createElement('h3', {}, 'Rep Max and Volume Estimates:')
+			createElement('h3', {}, 'Rep Max Estimates:')
 		);
 
-		// Find best 1RM by volume
-		const bestVolume = Math.max(
-			...estimatedVolumes.map((rm) => rm.totalVolume)
-		);
-		const bestRM = estimatedVolumes.find(
-			(rm) => rm.totalVolume === bestVolume
-		);
-
-		estimatedVolumes.forEach((rm) => {
-			const isBest = rm.reps === bestRM.reps;
-			const bestStyle = isBest ? 'color:rgb(138, 123, 40);' : ''; // Highlight with a light background color
-
+		estimatedRepMaxes.forEach((rm) => {
 			repMaxesContainer.appendChild(
 				createElement(
 					'div',
-					{
-						class: 'rep-max-item',
-						style: bestStyle, // Apply the style if it's the best
-					},
-					`${rm.reps}RM: ${rm.weight.toFixed(
-						2
-					)}Kg (${rm.totalVolume.toFixed(2)})`
+					{ class: 'rep-max-item' },
+					`${rm.reps}RM: ${rm.weight.toFixed(2)}Kg`
 				)
 			);
 		});
@@ -234,9 +171,10 @@ function createWorkoutSet(remainingSets) {
 function finalizeWorkout() {
 	const content = document.querySelector('.content');
 
-	// Remove live volume display if present
-	const volumeDisplay = document.getElementById('volume-display');
-	if (volumeDisplay) volumeDisplay.remove();
+	// Remove unnecessary elements
+	document
+		.querySelectorAll('.inputs-container, .rep-maxes')
+		.forEach((el) => el.remove());
 
 	const setsSummary = generateSetSummary(allSets);
 
@@ -253,21 +191,11 @@ function finalizeWorkout() {
 	content.append(
 		createElement(
 			'div',
-			{ class: 'result-container' },
-			`Total Effective Volume: ${currentTotalVolume.toFixed(2)}`
-		),
-		createElement(
-			'div',
 			{ class: 'summary-container' },
 			`Sets: ${setsSummary}`
 		),
 		buttonContainer // Add the button container
 	);
-
-	// Remove unnecessary elements
-	document
-		.querySelectorAll('.inputs-container, .rep-maxes')
-		.forEach((el) => el.remove());
 }
 
 function createCopyButton(textToCopy) {
