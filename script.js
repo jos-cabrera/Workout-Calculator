@@ -174,7 +174,6 @@ function finalizeWorkout() {
         .forEach((el) => el.remove());
 
     const setsSummary = generateSetSummary(allSets);
-    localStorage.setItem('lastSetSummary', setsSummary);
 
     const buttonContainer = createElement('div', { class: 'button-container' });
 
@@ -221,7 +220,7 @@ function createRestartButton(summaryToCopy) {
         navigator.clipboard.writeText(summaryToCopy).then(() => {
             setTimeout(() => {
                 location.reload();
-            }, 200); // slight delay to allow clipboard to complete
+            }, 200); // small delay to ensure copy completes
         });
     });
     return button;
@@ -245,22 +244,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const initialForm = document.getElementById('initial-form');
     const setsInput = document.getElementById('sets-input');
     const errorElement = document.getElementById('error');
-    const content = document.querySelector('.content');
-
-    const lastSummary = localStorage.getItem('lastSetSummary');
-    if (lastSummary) {
-        const summaryContainer = createElement(
-            'div',
-            { class: 'summary-container' },
-            `Last Session: ${lastSummary}`
-        );
-        const buttonContainer = createElement('div', { class: 'button-container' });
-        buttonContainer.append(
-            createCopyButton(lastSummary),
-            createRestartButton(lastSummary)
-        );
-        content.append(summaryContainer, buttonContainer);
-    }
 
     initialForm.addEventListener('submit', (e) => {
         e.preventDefault();
