@@ -39,7 +39,7 @@ function calculateOneRepMax(weight, reps) {
 
 function estimateRepMaxes(oneRepMax) {
 	const repMaxes = [];
-	for (let reps = 1; reps <= 12; reps++) {
+	for (let reps = 1; reps <= 30; reps++) {
 		const estimatedWeight = oneRepMax * (1.0278 - 0.0278 * reps);
 		repMaxes.push({
 			reps,
