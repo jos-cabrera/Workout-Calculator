@@ -81,7 +81,7 @@ function createWorkoutSet(remainingSets) {
         type: 'number',
         min: '0',
         max: '9',
-        placeholder: 'RIR',
+        placeholder: 'RIR (optional)',
         class: 'rir-input',
     });
     const submitButton = createElement(
@@ -93,9 +93,10 @@ function createWorkoutSet(remainingSets) {
     submitButton.addEventListener('click', () => {
         const weightValidation = validateNumericInput(weightInput);
         const repsValidation = validateNumericInput(repsInput);
-        const rirValidation = validateNumericInput(rirInput);
+
+        const rirValue = rirInput.value === '' ? 0 : parseFloat(rirInput.value);
         const repsValue = parseFloat(repsInput.value);
-        const rirValue = parseFloat(rirInput.value);
+
         const rirRepsValidation = validateRir(repsValue, rirValue);
 
         errorElement.innerHTML = '';
@@ -110,7 +111,6 @@ function createWorkoutSet(remainingSets) {
                 condition: !repsValidation.isValid,
                 message: repsValidation.error,
             },
-            { condition: !rirValidation.isValid, message: rirValidation.error },
             { condition: rirRepsValidation, message: rirRepsValidation },
         ].filter((e) => e.condition);
 
@@ -220,7 +220,7 @@ function createRestartButton(summaryToCopy) {
         navigator.clipboard.writeText(summaryToCopy).then(() => {
             setTimeout(() => {
                 location.reload();
-            }, 200); // small delay to ensure copy completes
+            }, 200);
         });
     });
     return button;
